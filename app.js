@@ -73,6 +73,9 @@ document.querySelectorAll('[data-copy]').forEach((button) => {
     const text = button.getAttribute('data-copy');
     if (!text || !feedback) return;
 
+    const originalLabel = button.innerHTML;
+    const originalAriaLabel = button.getAttribute('aria-label') || 'Copy prompt';
+
     try {
       const copied = await copyText(text);
       if (!copied) throw new Error('Clipboard unavailable');
