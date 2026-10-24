@@ -2,7 +2,7 @@
 
 **RepoPilot — GitHub work, in your words.**
 
-RepoPilot is a workflow skill for using GitHub from ChatGPT. It helps turn natural-language requests into repository research, code changes, issues, pull requests, reviews and CI investigation—with evidence-backed reporting and honest limits.
+RepoPilot is a workflow skill for using GitHub from ChatGPT. It turns natural-language requests into repository research, code changes, issues, pull requests, reviews and CI investigation—with evidence-backed reporting and honest limits.
 
 ## Status
 
@@ -10,17 +10,19 @@ The ChatGPT plugin is in private beta. The public website does not mean the plug
 
 ## Website
 
-The responsive landing page is hosted by GitHub Pages:
+The static landing page is prepared for GitHub Pages at:
 
 **https://jordan-thirkle.github.io/RepoPilot/**
 
-It is static HTML, CSS and JavaScript. It has no build dependencies, analytics scripts, paid hosting or third-party runtime dependencies.
+The first deployment is currently blocked because GitHub Pages has not yet been enabled in repository settings. The static-site verification job passes; the deployment job cannot enable Pages using the GitHub Actions token. Open **Settings → Pages** and choose **GitHub Actions** as the build and deployment source. After that, the workflow can deploy the site.
 
-## Deploy
+The site uses static HTML, CSS and JavaScript, with no build dependencies, analytics scripts, paid hosting or third-party runtime dependencies. GitHub Pages and the standard Actions workflow are intended to remain on their free public-repository tiers.
 
-The `.github/workflows/pages.yml` workflow verifies the site and deploys it from `main` using GitHub Pages. It also supports manual runs via **Actions → Verify and deploy RepoPilot Pages → Run workflow**.
+## Deploy and verify
 
-The workflow asks GitHub to enable/configure Pages with GitHub Actions, then uploads and deploys the static site. A successful commit is not proof of a successful deployment; check the Actions run and the URL it reports.
+The `.github/workflows/pages.yml` workflow checks the source and deploys it from `main`. It also supports manual runs via **Actions → Verify and deploy RepoPilot Pages → Run workflow**.
+
+A successful commit is not proof of a successful deployment. Check the Actions run and the deployment URL it reports.
 
 For local checks, use Node.js 20+:
 
