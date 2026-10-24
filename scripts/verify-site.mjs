@@ -9,37 +9,66 @@ const js = readFileSync(join(root, 'app.js'), 'utf8');
 const workflow = readFileSync(join(root, '.github/workflows/pages.yml'), 'utf8');
 const sitemap = readFileSync(join(root, 'sitemap.xml'), 'utf8');
 const robots = readFileSync(join(root, 'robots.txt'), 'utf8');
-const expectedSections = ['workflow', 'capabilities', 'prompts'];
 
-assert.match(html, /<!doctype html>/i, 'index.html must declare HTML5');
-assert.match(html, /<html lang="en">/i, 'page language must be declared');
+assert.match(html, /<!doctype html>/i, 'HTML5 doctype is required');
+assert.match(html, /<html lang="en">/i, 'document language is required');
 assert.match(html, /name="viewport"/, 'responsive viewport metadata is required');
 assert.match(html, /name="description"/, 'SEO description is required');
-assert.match(html, /rel="canonical"/, 'canonical URL is required for the intended Pages deployment');
-assert.match(html, /<h1[^>]*>GitHub work\.<br><span>In your words\.<\/span><\/h1>/, 'primary product promise is required');
-assert.match(html, /Private beta/, 'availability must be stated honestly');
-assert.match(html, /permissions/, 'permission limits must be disclosed');
-for (const id of expectedSections) assert.match(html, new RegExp(`id="${id}"`), `missing section: ${id}`);
-assert.match(html, /aria-label="Main navigation"/, 'main navigation must be labelled');
-assert.match(html, /aria-live="polite"/, 'copy feedback must be announced to assistive tech');
-assert.match(css, /@media\s*\(max-width:\s*680px\)/, 'mobile layout is required');
-assert.match(css, /prefers-reduced-motion/, 'reduced-motion preferences must be respected');
-assert.match(css, /:focus-visible/, 'visible keyboard focus is required');
-assert.match(js, /navigator\.clipboard\.writeText/, 'copy prompt interaction is required');
-assert.match(js, /aria-expanded/, 'mobile navigation state must be accessible');
+assert.match(html, /rel="canonical"/, 'canonical URL is required');
+assert.match(html, /property="og:title"/, 'social preview title is required');
+assert.match(html, /name="twitter:card"/, 'social card metadata is required');
+assert.equal([...html.matchAll(/<h1\b/g)].length, 1, 'the page must have exactly one primary heading');
+assert.match(html, /Private beta/, 'plugin availability must be stated honestly');
+assert.match(html, /permissions/, 'access and permission requirements must be disclosed');
+assert.match(html, /id="main"/, 'main landmark must be identified');
+assert.match(html, /href="#main"/, 'skip link must be present');
+assert.match(html, /role="group" aria-label="Illustrative RepoPilot task preview"/, 'illustrative preview must be clearly labelled');
+assert.match(html, /aria-label="Main navigation"/, 'desktop navigation must be labelled');
+assert.match(html, /aria-label="Mobile navigation"/, 'mobile navigation must be labelled');
+assert.match(html, /aria-live="polite"/, 'copy feedback must be announced politely');
+assert.equal([...html.matchAll(/data-copy="/g)].length, 3, 'three copyable prompt examples should be present');
+assert.match(html, /rel="noopener noreferrer"/, 'new-tab links must protect the opener context');
+assert.doesNotMatch(html, /<script[^>]+src="https?:\/\//i, 'runtime scripts must not load from third parties');
+assert.doesNotMatch(html, /google-analytics|googletagmanager|plausible\.io|hotjar/i, 'site must remain free of tracking scripts');
 
-const localAssets = [...html.matchAll(/(?:href|src)="\.\/([^"#?]+)"/g)].map((m) => m[1]);
+const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
+assert.equal(new Set(ids).size, ids.length, 'HTML IDs must be unique');
+const idSet = new Set(ids);
+const links = [...html.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*>/g)].map((match) => match[0]);
+for (const anchor of links) {
+  const href = anchor.match(/\bhref="([^"]+)"/)?.[1];
+  assert.ok(href, 'every anchor must have an href');
+  if (href.startsWith('#')) assert.ok(idSet.has(href.slice(1)), `broken in-page link: ${href}`);
+  else assert.ok(href.startsWith('https://') || href.startsWith('./'), `unexpected anchor target: ${href}`);
+  if (/target="_blank"/.test(anchor)) assert.match(anchor, /rel="[^"]*noopener/, `new-tab link lacks noopener: ${href}`);
+}
+
+const localAssets = [...html.matchAll(/(?:href|src)="\.\/([^"#?]+)"/g)].map((match) => match[1]);
 for (const asset of localAssets) {
-  if (asset.startsWith('http')) continue;
   assert.ok(existsSync(join(root, asset)), `missing local asset: ${asset}`);
 }
-assert.ok(existsSync(join(root, '.nojekyll')), '.nojekyll marker should exist for Pages');
-assert.ok(existsSync(join(root, '.github/workflows/pages.yml')), 'GitHub Pages workflow is required');
-assert.ok(readdirSync(join(root, 'assets')).includes('favicon.svg'), 'favicon must exist');
-assert.match(sitemap, /<loc>https:\/\/jordan-thirkle\.github\.io\/RepoPilot\/<\/loc>/, 'sitemap must contain the intended GitHub Pages URL');
-assert.match(robots, /Sitemap:\s+https:\/\/jordan-thirkle\.github\.io\/RepoPilot\/sitemap\.xml/, 'robots.txt must link the sitemap');
+assert.ok(existsSync(join(root, '.nojekyll')), '.nojekyll marker must exist');
+assert.ok(existsSync(join(root, 'assets/favicon.svg')), 'SVG favicon must exist');
+assert.match(sitemap, /<loc>https:\/\/jordan-thirkle\.github\.io\/RepoPilot\/<\/loc>/, 'sitemap must contain the live Pages URL');
+assert.match(robots, /Sitemap:\s+https:\/\/jordan-thirkle\.github\.io\/RepoPilot\/sitemap\.xml/, 'robots.txt must advertise the sitemap');
+
+assert.match(css, /clamp\(/, 'fluid typography should be used');
+assert.match(css, /minmax\(/, 'layouts should use flexible grid sizing');
+assert.match(css, /@media\s*\(max-width:\s*48rem\)/, 'mobile navigation/layout breakpoint is required');
+assert.match(css, /@media\s*\(max-width:\s*25rem\)/, 'small-screen layout breakpoint is required');
+assert.match(css, /prefers-color-scheme:\s*dark/, 'dark colour scheme should be supported');
+assert.match(css, /prefers-reduced-motion:\s*reduce/, 'reduced motion preferences must be respected');
+assert.match(css, /:focus-visible/, 'keyboard focus indicators must be visible');
+assert.match(css, /min-height:\s*2\.875rem/, 'interactive targets should be comfortably touchable');
+assert.match(css, /overflow-wrap:\s*anywhere/, 'long technical tokens must wrap safely');
+
+assert.match(js, /navigator\.clipboard\.writeText/, 'clipboard API should be used where supported');
+assert.match(js, /execCommand\('copy'\)/, 'a basic clipboard fallback should be available');
+assert.match(js, /event\.key === 'Escape'/, 'mobile navigation must support Escape');
+assert.match(js, /originalAriaLabel/, 'copy control must restore its accessible label');
+
 assert.match(workflow, /actions\/upload-pages-artifact@v4/, 'Pages artifact action must be configured');
 assert.match(workflow, /actions\/deploy-pages@v4/, 'Pages deployment action must be configured');
-assert.match(workflow, /github\.ref == 'refs\/heads\/main'/, 'Pages deployment must be restricted to main');
+assert.match(workflow, /github\.ref == 'refs\/heads\/main'/, 'deployment must be restricted to main');
 
-console.log(`RepoPilot Pages site checks passed (${expectedSections.length} sections, ${localAssets.length} local asset references).`);
+console.log(`Static checks passed: ${ids.length} unique IDs, ${links.length} links and ${localAssets.length} local asset references.`);
