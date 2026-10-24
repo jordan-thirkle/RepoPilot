@@ -12,9 +12,7 @@ function closeMobileNav() {
 
 if (menuButton && mobileNav) {
   menuButton.addEventListener('click', () => {
-    const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
-    const shouldOpen = !isExpanded;
-
+    const shouldOpen = menuButton.getAttribute('aria-expanded') !== 'true';
     menuButton.setAttribute('aria-expanded', String(shouldOpen));
     menuButton.setAttribute('aria-label', shouldOpen ? 'Close navigation' : 'Open navigation');
     mobileNav.hidden = !shouldOpen;
@@ -31,8 +29,7 @@ if (menuButton && mobileNav) {
     }
   });
 
-  const desktopLayout = window.matchMedia('(min-width: 48.001rem)');
-  desktopLayout.addEventListener('change', (event) => {
+  window.matchMedia('(min-width: 48.001rem)').addEventListener('change', (event) => {
     if (event.matches) closeMobileNav();
   });
 }
@@ -67,14 +64,12 @@ async function copyText(text) {
 }
 
 document.querySelectorAll('[data-copy]').forEach((button) => {
-  const originalLabel = button.innerHTML;
+  const originalMarkup = button.innerHTML;
+  const originalAriaLabel = button.getAttribute('aria-label') || 'Copy prompt';
 
   button.addEventListener('click', async () => {
     const text = button.getAttribute('data-copy');
     if (!text || !feedback) return;
-
-    const originalLabel = button.innerHTML;
-    const originalAriaLabel = button.getAttribute('aria-label') || 'Copy prompt';
 
     try {
       const copied = await copyText(text);
@@ -84,8 +79,8 @@ document.querySelectorAll('[data-copy]').forEach((button) => {
       button.innerHTML = 'Copied <span aria-hidden="true">✓</span>';
       button.setAttribute('aria-label', 'Prompt copied');
       window.setTimeout(() => {
-        button.innerHTML = originalLabel;
-        button.setAttribute('aria-label', button.dataset.copyLabel || 'Copy prompt');
+        button.innerHTML = originalMarkup;
+        button.setAttribute('aria-label', originalAriaLabel);
       }, 1800);
     } catch {
       feedback.textContent = 'Copy was blocked by this browser. Select the prompt text and copy it manually.';
