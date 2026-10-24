@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jordan-thirkle.github.io/RepoPilot/sitemap.xml
