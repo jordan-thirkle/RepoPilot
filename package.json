@@ -1,11 +1,12 @@
 {
   "name": "repopilot-github-pages",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
-  "description": "Minimal GitHub Pages website for RepoPilot, a GitHub assistant in ChatGPT.",
+  "description": "Minimal, responsive GitHub Pages website for RepoPilot.",
   "scripts": {
-    "test": "node scripts/verify-site.mjs",
-    "verify": "node scripts/verify-site.mjs"
+    "test": "npm run verify",
+    "verify": "node scripts/verify-site.mjs",
+    "test:responsive": "node scripts/responsive-smoke.mjs"
   },
   "engines": {
     "node": ">=20"
