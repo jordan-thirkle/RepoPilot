@@ -20,11 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
       - name: Verify content, links and accessibility essentials
         run: npm run verify
 
@@ -33,11 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
       - name: Install pinned browser-test dependency
         run: npm install --no-save --no-audit --no-fund playwright@1.64.1
       - name: Install Chromium
@@ -58,7 +58,7 @@ jobs:
       id-token: write
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload site artifact
