@@ -38,8 +38,12 @@ const feedback = document.querySelector('#copy-feedback');
 
 async function copyText(text) {
   if (navigator.clipboard && window.isSecureContext) {
-    await navigator.clipboard.writeText(text);
-    return true;
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // Continue to the textarea fallback for browsers that expose but block the Clipboard API.
+    }
   }
 
   const fallback = document.createElement('textarea');
