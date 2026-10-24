@@ -1,11 +1,38 @@
 # RepoPilot
 
-RepoPilot is a GitHub assistant workflow for ChatGPT. This repository hosts its public landing page and GitHub Pages deployment workflow.
+**RepoPilot — GitHub work, in your words.**
+
+RepoPilot is a workflow skill for using GitHub from ChatGPT. It helps turn natural-language requests into repository research, code changes, issues, pull requests, reviews and CI investigation—with evidence-backed reporting and honest limits.
 
 ## Status
 
-RepoPilot is currently in private beta. Access to the ChatGPT plugin depends on the user's ChatGPT access and connected GitHub permissions.
+The ChatGPT plugin is in private beta. The public website does not mean the plugin is publicly installable; access depends on ChatGPT availability and the connected GitHub permissions.
 
 ## Website
 
-The site is deployed from the `main` branch using GitHub Actions and GitHub Pages. No build dependencies or paid hosting are required.
+The responsive landing page is hosted by GitHub Pages:
+
+**https://jordan-thirkle.github.io/RepoPilot/**
+
+It is static HTML, CSS and JavaScript. It has no build dependencies, analytics scripts, paid hosting or third-party runtime dependencies.
+
+## Deploy
+
+The `.github/workflows/pages.yml` workflow verifies the site and deploys it from `main` using GitHub Pages. It also supports manual runs via **Actions → Verify and deploy RepoPilot Pages → Run workflow**.
+
+The workflow asks GitHub to enable/configure Pages with GitHub Actions, then uploads and deploys the static site. A successful commit is not proof of a successful deployment; check the Actions run and the URL it reports.
+
+For local checks, use Node.js 20+:
+
+```sh
+npm run verify
+```
+
+## Project links
+
+- Repository: https://github.com/jordan-thirkle/RepoPilot
+- RepoPilot in ChatGPT (private beta): https://chatgpt.com/plugins/plugins_6adcd2f31dc08191b79ad455e7d81e94
+
+## License
+
+MIT. See [LICENSE](LICENSE).
