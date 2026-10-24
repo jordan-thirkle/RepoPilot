@@ -248,6 +248,26 @@ a:focus-visible {
   inset-block-start: 0.35rem;
 }
 
+.menu-icon,
+.menu-icon::before,
+.menu-icon::after {
+  transition: transform 160ms ease, inset-block-start 160ms ease, background-color 160ms ease;
+}
+
+.menu-toggle[aria-expanded="true"] .menu-icon {
+  background: transparent;
+}
+
+.menu-toggle[aria-expanded="true"] .menu-icon::before {
+  inset-block-start: 0;
+  transform: rotate(45deg);
+}
+
+.menu-toggle[aria-expanded="true"] .menu-icon::after {
+  inset-block-start: 0;
+  transform: rotate(-45deg);
+}
+
 .mobile-nav {
   display: none;
 }
@@ -293,7 +313,6 @@ a:focus-visible {
 }
 
 .hero h1 {
-  max-width: 10ch;
   margin: 0;
   font-size: clamp(2.65rem, 6.6vw, 5.25rem);
   font-weight: 760;
@@ -786,7 +805,6 @@ a:focus-visible {
   }
 
   .hero h1 {
-    max-width: 11ch;
     font-size: clamp(2.75rem, 9.5vw, 4.75rem);
   }
 
