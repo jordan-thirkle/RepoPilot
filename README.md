@@ -10,13 +10,11 @@ The ChatGPT plugin is in private beta. The public website does not mean the plug
 
 ## Website
 
-The static landing page is prepared for GitHub Pages at:
+**Live site:** https://jordan-thirkle.github.io/RepoPilot/
 
-**https://jordan-thirkle.github.io/RepoPilot/**
+The responsive landing page is hosted on GitHub Pages from `main` via GitHub Actions. GitHub Pages has been configured to use GitHub Actions as its source. The static-site verification and latest deployment workflow both passed.
 
-The first deployment is currently blocked because GitHub Pages has not yet been enabled in repository settings. The static-site verification job passes; the deployment job cannot enable Pages using the GitHub Actions token. Open **Settings → Pages** and choose **GitHub Actions** as the build and deployment source. After that, the workflow can deploy the site.
-
-The site uses static HTML, CSS and JavaScript, with no build dependencies, analytics scripts, paid hosting or third-party runtime dependencies. GitHub Pages and the standard Actions workflow are intended to remain on their free public-repository tiers.
+The site uses static HTML, CSS and JavaScript, with no build dependencies, analytics scripts, paid hosting or third-party runtime dependencies.
 
 ## Deploy and verify
 
