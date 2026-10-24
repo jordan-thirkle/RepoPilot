@@ -133,9 +133,18 @@ try {
       const copyBounds = await firstCopy.boundingBox();
       assert.ok(copyBounds && copyBounds.width >= 44 && copyBounds.height >= 44, 'Copy prompt button must have a usable touch target');
       await firstCopy.click();
-      await page.getByRole('status').waitFor();
+      await page.waitForFunction(
+        () => /Prompt copied|Copy was blocked/.test(document.querySelector('#copy-feedback')?.textContent ?? ''),
+        null,
+        { timeout: 5000 }
+      );
       assert.match(await page.locator('#copy-feedback').innerText(), /Prompt copied/, 'Copy action did not report success');
       assert.match(await page.locator('[data-copy]').first().getAttribute('aria-label'), /copied/i, 'Copy action did not announce its state');
+      assert.equal(
+        await page.evaluate(() => navigator.clipboard.readText()),
+        await firstCopy.getAttribute('data-copy'),
+        'Clipboard should contain the exact prompt'
+      );
     }
 
     console.log(`PASS ${width}x${height}: no overflow, navigation and CTA layout valid`);
