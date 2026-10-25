@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { createReadStream, existsSync, statSync } from 'node:fs';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
 import { chromium } from 'playwright';
 
@@ -49,6 +50,15 @@ await new Promise((resolveListen, rejectListen) => {
 
 const address = server.address();
 const baseUrl = `http://127.0.0.1:${address.port}`;
+const screenshotDirectory = join(root, 'artifacts', 'screenshots');
+await mkdir(screenshotDirectory, { recursive: true });
+const screenshotManifest = {
+  repository: process.env.GITHUB_REPOSITORY ?? 'local',
+  sourceRevision: process.env.GITHUB_SHA ?? 'unknown',
+  eventName: process.env.GITHUB_EVENT_NAME ?? 'local',
+  captures: []
+};
+let suitePassed = false;
 let browser;
 
 try {
@@ -81,6 +91,29 @@ try {
     });
 
     await page.goto(baseUrl, { waitUntil: 'networkidle' });
+
+    // Keep a compact visual record at one real mobile and desktop size.
+    // Capture before assertions so a broken layout can still be inspected in CI.
+    if (width === 390 || width === 1440) {
+      const profile = width === 390 ? 'mobile-390x844' : 'desktop-1440x900';
+      const viewportFile = `${profile}-viewport.png`;
+      const fullPageFile = `${profile}-full.png`;
+      await page.screenshot({
+        path: join(screenshotDirectory, viewportFile),
+        fullPage: false,
+        animations: 'disabled'
+      });
+      await page.screenshot({
+        path: join(screenshotDirectory, fullPageFile),
+        fullPage: true,
+        animations: 'disabled'
+      });
+      screenshotManifest.captures.push(
+        { file: viewportFile, viewport: { width, height }, fullPage: false, colorScheme: 'light' },
+        { file: fullPageFile, viewport: { width, height }, fullPage: true, colorScheme: 'light' }
+      );
+    }
+
     const metrics = await page.evaluate(() => {
       const title = document.querySelector('h1');
       const titleBox = title.getBoundingClientRect();
@@ -164,7 +197,14 @@ try {
   await darkContext.close();
 
   console.log(`Responsive browser checks passed across ${viewportSizes.length} viewport sizes, plus dark mode and menu/copy interactions.`);
+  suitePassed = true;
 } finally {
-  if (browser) await browser.close();
-  await new Promise((resolveClose) => server.close(resolveClose));
+  try {
+    if (browser) await browser.close();
+  } finally {
+    screenshotManifest.checksPassed = suitePassed;
+    screenshotManifest.finishedAt = new Date().toISOString();
+    await writeFile(join(screenshotDirectory, 'manifest.json'), `${JSON.stringify(screenshotManifest, null, 2)}\n`, 'utf8');
+    await new Promise((resolveClose) => server.close(resolveClose));
+  }
 }
