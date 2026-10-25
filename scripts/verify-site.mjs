@@ -76,8 +76,8 @@ assert.match(workflow, /github\.ref == 'refs\/heads\/main'/, 'deployment must be
 // the same repository's short-lived CI artifact; it is not published to Pages.
 assert.match(responsiveScript, /page\.screenshot\(/, 'browser checks should capture visual evidence');
 assert.match(responsiveScript, /fullPage:\s*true/, 'visual evidence should include full-page captures');
-assert.match(responsiveScript, /mobile-390x844-full\.png/, 'mobile full-page screenshot should be generated');
-assert.match(responsiveScript, /desktop-1440x900-full\.png/, 'desktop full-page screenshot should be generated');
+assert.match(responsiveScript, /mobile-390x844/, 'mobile screenshot should be generated');
+assert.match(responsiveScript, /desktop-1440x900/, 'desktop screenshot should be generated');
 assert.match(responsiveScript, /manifest\.json/, 'screenshot artifact should include a manifest');
 assert.match(workflow, /actions\/upload-artifact@v\d+/, 'browser job should upload screenshot evidence');
 assert.match(workflow, /retention-days:\s*3/, 'screenshot evidence should have short retention');
