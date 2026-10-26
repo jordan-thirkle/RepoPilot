@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 
 const root = process.cwd();
 const output = resolve(root, 'dist');
-const publicFiles = ['index.html', 'styles.css', 'app.js', 'robots.txt', 'sitemap.xml'];
+const publicFiles = ['index.html', 'styles.css', 'robots.txt', 'sitemap.xml'];
 
 await rm(output, { recursive: true, force: true });
 await mkdir(join(output, 'assets'), { recursive: true });
