@@ -14,7 +14,7 @@ The ChatGPT plugin is in private beta. The public website does not mean the plug
 
 The responsive landing page is hosted on GitHub Pages from `main` via GitHub Actions. GitHub Pages has been configured to use GitHub Actions as its source. The static-site verification and latest deployment workflow both passed.
 
-The site uses static HTML, CSS and JavaScript, with no build dependencies, analytics scripts, paid hosting or third-party runtime dependencies.
+The deployed site uses static HTML, CSS and JavaScript with no third-party runtime dependencies, analytics scripts or paid hosting. Development-only browser-test dependencies are pinned in `package.json` and `package-lock.json`; Playwright runs Chromium, and axe-core scans the light and dark themes for WCAG A/AA issues.
 
 Pull requests also generate short-lived visual evidence from the real browser suite. The `repopilot-visual-evidence` artifact contains desktop and mobile viewport/full-page screenshots plus a manifest recording the tested revision and result. It is stored as a GitHub Actions artifact for three days, is subject to the repository's read permissions, and is not copied into the deployed website.
 
@@ -24,11 +24,16 @@ The `.github/workflows/pages.yml` workflow validates the source, runs browser ch
 
 The Pages artifact contains only the public HTML/CSS/JS, site metadata and favicon—not the repository README, design source, test scripts or workflow files. The deploy job then smoke-tests the live URL, including its expected commit SHA from `deployment-info.json`, the homepage, core assets, robots.txt and sitemap. A successful commit or provider deployment alone is not proof of a healthy live site; check the full Actions run.
 
-For local checks, use Node.js 20+:
+For local checks, use Node.js 24+:
 
 ```sh
+npm ci
 npm run verify
+npx playwright install chromium
+npm run test:responsive
 ```
+
+The browser suite tests 14 viewport sizes, keyboard menu/copy interactions, local HTTP response statuses, JavaScript/console errors, and axe-core scans against WCAG 2.0/2.1 A/AA plus WCAG 2.2 AA rules on both light and dark themes. Automated checks are a useful regression gate, not a substitute for a full manual accessibility review.
 
 ## Project links
 
