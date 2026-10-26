@@ -16,6 +16,8 @@ The responsive landing page is hosted on GitHub Pages from `main` via GitHub Act
 
 The site uses static HTML, CSS and JavaScript, with no build dependencies, analytics scripts, paid hosting or third-party runtime dependencies.
 
+Pull requests also generate short-lived visual evidence from the real browser suite. The `repopilot-visual-evidence` artifact contains desktop and mobile viewport/full-page screenshots plus a manifest recording the tested revision and result. It is stored as a GitHub Actions artifact for three days, is subject to the repository's read permissions, and is not copied into the deployed website.
+
 ## Deploy and verify
 
 The `.github/workflows/pages.yml` workflow checks the source and deploys it from `main`. It also supports manual runs via **Actions → Verify and deploy RepoPilot Pages → Run workflow**.

@@ -44,6 +44,18 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Test responsive layouts and interactions
         run: npm run test:responsive
+        env:
+          REPOPILOT_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          REPOPILOT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: repopilot-visual-evidence
+          path: artifacts/screenshots/
+          retention-days: 3
+          if-no-files-found: warn
 
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
