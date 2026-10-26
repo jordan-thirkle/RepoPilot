@@ -29,7 +29,7 @@ assert.match(html, /<h1[^>]*>A GitHub coding assistant for ChatGPT\.<\/h1>/, 'ma
 assert.match(html, /name="description" content="[^"]*GitHub bugs[^"]*GitHub Actions/, 'SEO description must use natural product/search language');
 assert.match(html, /fix bugs/i, 'common bug-fixing use case must be clear');
 assert.match(html, /open pull requests/i, 'pull-request use case must be clear');
-assert.match(html, /troubleshoot GitHub Actions/i, 'GitHub Actions use case must be clear');
+assert.match(html, /troubleshoot failed GitHub Actions/i, 'GitHub Actions use case must be clear');
 assert.match(html, /existing GitHub connection/i, 'the integration model must be explained plainly');
 assert.match(html, /which checks actually ran/i, 'evidence-based reporting must be explained plainly');
 assert.match(html, /Private beta/, 'plugin availability must be stated honestly');
@@ -39,7 +39,7 @@ assert.match(html, /href="#main"/, 'skip link must be present');
 assert.match(html, /aria-label="Main navigation"/, 'primary navigation must be labelled');
 assert.match(html, /href="https:\/\/github\.com\/jordan-thirkle\/RepoPilot"/, 'repository source link must remain available');
 assert.match(html, /Open RepoPilot in ChatGPT/, 'primary action must clearly state its destination');
-assert.doesNotMatch(html, /data-copy=|copy-feedback|mobile-nav|data-menu-toggle/, 'redundant prompt-copy and mobile-menu UI must not return');
+assert.doesNotMatch(html, /data-copy=|copy-feedback|mobile-nav|data-menu-toggle|task-list/, 'redundant prompt-copy, task-list and mobile-menu UI must not return');
 assert.match(html, /application\/ld\+json/, 'software metadata should be available to search engines');
 assert.match(html, /SoftwareApplication/, 'structured software metadata must describe the product');
 assert.doesNotMatch(html, /<script[^>]+src=/i, 'the static landing page must not load a client-side JavaScript bundle');
