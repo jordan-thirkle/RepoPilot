@@ -104,9 +104,10 @@ assert.match(workflow, /path: dist\//, 'deployment artifact must exclude reposit
 assert.match(workflow, /Smoke-test the live deployment/, 'successful deploy must be followed by a live smoke test');
 assert.match(workflow, /post-deploy-smoke\.mjs/, 'post-deploy smoke script must be invoked');
 assert.equal(packageJson.scripts['build:site'], 'node scripts/prepare-site.mjs', 'site allowlist build command must be defined');
+assert.match(packageJson.scripts.verify, /node --check scripts\/post-deploy-smoke\.mjs/, 'post-deploy script syntax must be checked in CI');
 assert.match(packageJson.scripts.verify, /verify-dist\.mjs/, 'verify must validate the built deployment output');
 assert.match(siteBuilder, /deployment-info\.json/, 'published site must carry revision metadata for release verification');
-assert.match(siteBuilder, /assets/, 'site builder must explicitly copy public assets');
+assert.match(siteBuilder, /assets\/favicon\.svg/, 'site builder must copy only the explicitly public favicon asset');
 assert.match(distVerifier, /deployment-info\.json/, 'built output verifier must validate revision metadata');
 assert.match(postDeploySmoke, /EXPECTED_SHA/, 'live smoke test must compare deployed revision');
 assert.match(postDeploySmoke, /deployment-info\.json/, 'live smoke test must verify deployment revision metadata');

@@ -10,7 +10,6 @@ on:
 permissions:
   contents: read
 
-
 jobs:
   verify:
     name: Verify static site

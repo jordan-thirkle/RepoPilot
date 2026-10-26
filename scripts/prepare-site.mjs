@@ -1,4 +1,4 @@
-import { cp, copyFile, mkdir, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 const root = process.cwd();
@@ -11,7 +11,7 @@ await mkdir(join(output, 'assets'), { recursive: true });
 for (const file of publicFiles) {
   await copyFile(join(root, file), join(output, file));
 }
-await cp(join(root, 'assets'), join(output, 'assets'), { recursive: true });
+await copyFile(join(root, 'assets', 'favicon.svg'), join(output, 'assets', 'favicon.svg'));
 
 const deploymentInfo = {
   repository: process.env.GITHUB_REPOSITORY ?? 'local',
@@ -22,4 +22,4 @@ const deploymentInfo = {
 await writeFile(join(output, 'deployment-info.json'), `${JSON.stringify(deploymentInfo, null, 2)}\n`, 'utf8');
 
 console.log(`Prepared allowlisted Pages output at ${output}`);
-console.log(`Public files: ${[...publicFiles, 'assets/**', 'deployment-info.json'].join(', ')}`);
+console.log(`Public files: ${[...publicFiles, 'assets/favicon.svg', 'deployment-info.json'].join(', ')}`);

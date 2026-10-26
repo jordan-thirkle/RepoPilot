@@ -6,6 +6,7 @@ const output = join(process.cwd(), 'dist');
 const expectedEntries = ['app.js', 'assets', 'deployment-info.json', 'index.html', 'robots.txt', 'sitemap.xml', 'styles.css'].sort();
 const entries = (await readdir(output)).sort();
 assert.deepEqual(entries, expectedEntries, 'deployment output must contain only the explicit public-site allowlist');
+assert.deepEqual(await readdir(join(output, 'assets')), ['favicon.svg'], 'only the explicitly allowlisted public favicon may be deployed');
 
 for (const file of ['index.html', 'styles.css', 'app.js', 'robots.txt', 'sitemap.xml', 'deployment-info.json']) {
   const details = await stat(join(output, file));

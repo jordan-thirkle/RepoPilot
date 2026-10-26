@@ -34,7 +34,7 @@ async function fetchResource(resource) {
   const response = await fetch(url, {
     redirect: 'follow',
     signal: AbortSignal.timeout(8000),
-    headers: { 'user-agent': 'RepoPilot-PostDeploy-Smoke/1.0' }
+    headers: { 'user-agent': 'RepoPilot-PostDeploy-Smoke/1.0', 'cache-control': 'no-cache', pragma: 'no-cache' }
   });
   assert.equal(new URL(response.url).origin, baseUrl.origin, `${resource.name} unexpectedly redirected to another origin`);
   assert.ok(response.ok, `${resource.name} returned HTTP ${response.status}`);
