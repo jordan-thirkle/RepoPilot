@@ -195,7 +195,7 @@ try {
       console.log('PASS axe-core: no WCAG 2.0/2.1 A/AA or WCAG 2.2 AA violations on the light theme');
     }
 
-    const primaryNav = page.locator('.desktop-nav');
+    const primaryNav = page.locator('.primary-nav');
     const sourceLink = page.locator('.site-footer .footer-links a[href="https://github.com/jordan-thirkle/RepoPilot"]');
     const chatCta = page.locator('.nav-cta');
     assert.equal(await primaryNav.isVisible(), true, `Primary navigation must stay visible at ${width}px`);
