@@ -264,6 +264,7 @@ a:focus-visible {
   margin: 0;
   font-size: .82rem;
   line-height: 1.42;
+  overflow-wrap: anywhere;
   text-wrap: pretty;
 }
 .copy-button {
