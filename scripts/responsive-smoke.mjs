@@ -31,7 +31,6 @@ const root = resolve(process.cwd());
 const mimeTypes = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
-  '.js': 'text/javascript; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.txt': 'text/plain; charset=utf-8',
   '.xml': 'application/xml; charset=utf-8'
@@ -104,7 +103,6 @@ try {
       colorScheme: 'light',
       reducedMotion: 'reduce'
     });
-    await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: baseUrl });
     const page = await context.newPage();
     const pageErrors = [];
     const consoleErrors = [];
@@ -160,6 +158,7 @@ try {
       const cta = document.querySelector('.button-primary').getBoundingClientRect();
       return {
         pageTitle: document.title,
+        headingText: title.innerText,
         viewport: window.innerWidth,
         documentWidth: document.documentElement.scrollWidth,
         documentHeight: document.documentElement.scrollHeight,
@@ -179,7 +178,11 @@ try {
     assert.ok(metrics.bodyWidth <= width + 1, `Body overflow at ${width}px: body ${metrics.bodyWidth}px`);
     assert.ok(metrics.headingLeft >= -1 && metrics.headingRight <= width + 1, `Heading escapes viewport at ${width}px`);
     assert.ok(metrics.ctaHeight >= 44, `Primary CTA target too short at ${width}px: ${metrics.ctaHeight}px`);
-    assert.equal(metrics.pageTitle, 'RepoPilot — GitHub work, in your words');
+    assert.equal(metrics.pageTitle, 'RepoPilot | GitHub coding assistant for ChatGPT');
+    assert.match(metrics.headingText, /GitHub coding assistant for ChatGPT/i, 'main heading should name the product category');
+    assert.match(await page.locator('main').innerText(), /Fix bugs/, 'bug-fixing use case must be visible');
+    assert.match(await page.locator('main').innerText(), /Open pull requests/, 'pull-request use case must be visible');
+    assert.match(await page.locator('main').innerText(), /Troubleshoot GitHub Actions/, 'GitHub Actions use case must be visible');
     if ((width === 390 && height === 844) || (width === 1440 && height === 900)) {
       assert.ok(metrics.documentHeight <= height + 1, `Compact layout should fit one viewport at ${width}x${height}: page is ${metrics.documentHeight}px tall`);
     }
@@ -196,31 +199,17 @@ try {
     }
 
     const primaryNav = page.locator('.primary-nav');
-    const sourceLink = page.locator('.site-footer .footer-links a[href="https://github.com/jordan-thirkle/RepoPilot"]');
-    const chatCta = page.locator('.nav-cta');
+    const sourceLink = page.locator('.primary-nav .source-link');
+    const chatCta = page.locator('.hero-actions .button-primary');
     assert.equal(await primaryNav.isVisible(), true, `Primary navigation must stay visible at ${width}px`);
     assert.equal(await sourceLink.isVisible(), true, `Repository link must stay available at ${width}px`);
     const chatCtaBounds = await chatCta.boundingBox();
     assert.ok(chatCtaBounds && chatCtaBounds.height >= 44, `Header CTA target is too short at ${width}px`);
 
     if (width === 390) {
-      const firstCopy = page.locator('[data-copy]').first();
-      const copyBounds = await firstCopy.boundingBox();
-      assert.ok(copyBounds && copyBounds.width >= 44 && copyBounds.height >= 44, 'Copy prompt button must have a usable touch target');
-      await firstCopy.focus();
-      await page.keyboard.press('Enter');
-      await page.waitForFunction(
-        () => /Prompt copied|Copy was blocked/.test(document.querySelector('#copy-feedback')?.textContent ?? ''),
-        null,
-        { timeout: 5000 }
-      );
-      assert.match(await page.locator('#copy-feedback').innerText(), /Prompt copied/, 'Copy action did not report success');
-      assert.match(await page.locator('[data-copy]').first().getAttribute('aria-label'), /copied/i, 'Copy action did not announce its state');
-      assert.equal(
-        await page.evaluate(() => navigator.clipboard.readText()),
-        await firstCopy.getAttribute('data-copy'),
-        'Clipboard should contain the exact prompt'
-      );
+      await chatCta.focus();
+      assert.equal(await chatCta.evaluate((element) => element === document.activeElement), true, 'Primary CTA must receive keyboard focus');
+      assert.match(await chatCta.getAttribute('href'), /^https:\/\/chatgpt\.com\/plugins\//, 'Primary CTA must open the real RepoPilot entry point');
     }
 
     console.log(`PASS ${width}x${height}: no overflow, navigation and CTA layout valid`);
@@ -253,7 +242,7 @@ try {
   console.log('PASS dark scheme and axe-core: preference is respected with no scanned WCAG violations');
   await darkContext.close();
 
-  console.log(`Responsive browser checks passed across ${viewportSizes.length} viewport sizes, plus dark mode and menu/copy interactions.`);
+  console.log(`Responsive browser checks passed across ${viewportSizes.length} viewport sizes, plus dark mode and primary CTA keyboard focus.`);
   suitePassed = true;
 } finally {
   try {
