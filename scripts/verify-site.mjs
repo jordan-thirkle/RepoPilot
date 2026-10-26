@@ -111,7 +111,7 @@ assert.match(responsiveScript, /page\.screenshot\(/, 'browser checks should capt
 assert.match(responsiveScript, /runAxeAudit/, 'browser checks should run automated axe-core WCAG scans');
 assert.match(responsiveScript, /response\.status\(\) >= 400/, 'browser checks should fail for local HTTP error responses');
 assert.match(responsiveScript, /consoleErrors/, 'browser checks should collect console errors');
-assert.match(responsiveScript, /page\.locator\('\.hero-actions \.button-primary'\)/, 'browser checks should test the primary CTA');
+assert.match(responsiveScript, /page\.locator\('\.button-primary'\)/, 'browser checks should test the primary CTA');
 assert.match(responsiveScript, /darkViolations/, 'browser checks should scan the dark theme for accessibility violations');
 assert.match(responsiveScript, /fullPage:\s*true/, 'visual evidence should include full-page captures');
 assert.match(responsiveScript, /mobile-390x844/, 'mobile screenshot should be generated');
