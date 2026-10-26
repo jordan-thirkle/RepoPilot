@@ -115,7 +115,7 @@ assert.match(responsiveScript, /baseRevision:/, 'manifest should identify the PR
 assert.match(responsiveScript, /workflowRunId:/, 'manifest should identify the workflow run');
 assert.match(workflow, /REPOPILOT_HEAD_SHA:/, 'browser job should pass the PR head SHA to the manifest');
 assert.match(workflow, /REPOPILOT_BASE_SHA:/, 'browser job should pass the PR base SHA to the manifest');
-assert.match(workflow, /actions\/upload-artifact@v\d+/, 'browser job should upload screenshot evidence');
+assert.match(workflow, /actions\/upload-artifact@[a-f0-9]{40} # v7\.0\.2/, 'browser job should upload screenshot evidence through the pinned Node 24 action');
 assert.match(workflow, /retention-days:\s*3/, 'screenshot evidence should have short retention');
 assert.match(workflow, /path:\s*artifacts\/screenshots\//, 'only the screenshot output folder should be uploaded');
 assert.match(workflow, /if:\s*always\(\)/, 'screenshots should be uploaded even when browser tests fail');
