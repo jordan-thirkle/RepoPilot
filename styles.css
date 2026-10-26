@@ -100,13 +100,13 @@ a:focus-visible {
   letter-spacing: -.045em;
 }
 
-.desktop-nav,
+.primary-nav,
 .footer-links {
   display: flex;
   align-items: center;
   gap: clamp(.75rem, 2vw, 1.5rem);
 }
-.desktop-nav { color: var(--muted); font-size: .84rem; }
+.primary-nav { color: var(--muted); font-size: .84rem; }
 .source-link:hover,
 .footer-links a:hover { color: var(--accent-ink); text-decoration: underline; }
 .source-link span { margin-inline-start: .18rem; }
