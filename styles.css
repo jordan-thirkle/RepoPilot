@@ -143,6 +143,7 @@ a:focus-visible {
   color: var(--muted);
   font-size: clamp(.98rem, 1.5vw, 1.12rem);
   line-height: 1.7;
+  overflow-wrap: anywhere;
   text-wrap: pretty;
 }
 
@@ -170,28 +171,6 @@ a:focus-visible {
 .button-primary:hover {
   background: #d7f79d;
   transform: translateY(-1px);
-}
-
-.task-list {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: .55rem 1.2rem;
-  margin: 1.6rem 0 0;
-  padding: 0;
-  list-style: none;
-  color: var(--ink);
-  font-size: .88rem;
-  font-weight: 620;
-}
-.task-list li {
-  overflow-wrap: anywhere;
-}
-.task-list li + li::before {
-  content: "·";
-  margin-inline-end: 1.2rem;
-  color: var(--muted);
 }
 
 .beta-note {
@@ -229,12 +208,6 @@ a:focus-visible {
     line-height: 1.55;
   }
   .button { margin-block-start: 1rem; }
-  .task-list {
-    gap: .4rem .75rem;
-    margin-block-start: 1.15rem;
-    font-size: .8rem;
-  }
-  .task-list li + li::before { margin-inline-end: .75rem; }
   .beta-note { margin-block-start: 1rem; font-size: .73rem; }
   .site-footer { min-height: 3.2rem; font-size: .68rem; }
 }
