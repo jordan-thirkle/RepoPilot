@@ -341,7 +341,7 @@ a:focus-visible {
   .brand { gap: .45rem; }
   .brand-name { font-size: .94rem; }
   .source-link { display: none; }
-  .nav-cta { min-height: 2.7rem; padding-inline: .7rem; font-size: .78rem; }
+  .nav-cta { min-height: 2.875rem; padding-inline: .7rem; font-size: .78rem; }
   .site-main { padding-block: .95rem; }
   .hero { gap: 1rem; }
   .hero h1 { font-size: clamp(2.35rem, 10.4vw, 3.15rem); letter-spacing: -.07em; }
