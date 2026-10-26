@@ -32,7 +32,7 @@ const healthy = runSmoke('success');
 assert.equal(healthy.error, undefined, healthy.error?.message);
 assert.equal(healthy.status, 0, `healthy deployment was rejected:\n${healthy.stdout}\n${healthy.stderr}`);
 assert.match(healthy.stdout, /Live Pages smoke test passed/, 'success case should report a successful smoke test');
-assert.match(healthy.stdout, /PASS HTTP 200 \/$/, 'success case should confirm the homepage');
+assert.match(healthy.stdout, /PASS HTTP 200 \/\n/, 'success case should confirm the homepage');
 
 const stale = runSmoke('success', wrongRevision);
 assert.equal(stale.error, undefined, stale.error?.message);
