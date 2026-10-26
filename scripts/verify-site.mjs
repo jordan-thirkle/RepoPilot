@@ -111,5 +111,6 @@ assert.match(siteBuilder, /assets\/favicon\.svg/, 'site builder must copy only t
 assert.match(distVerifier, /deployment-info\.json/, 'built output verifier must validate revision metadata');
 assert.match(postDeploySmoke, /EXPECTED_SHA/, 'live smoke test must compare deployed revision');
 assert.match(postDeploySmoke, /deployment-info\.json/, 'live smoke test must verify deployment revision metadata');
+assert.match(packageJson.scripts.verify, /node scripts\/post-deploy-smoke\.test\.mjs/, 'live smoke behavior tests must be included in verification');
 
 console.log('Static checks passed: ' + ids.length + ' unique IDs, ' + links.length + ' local asset references; screenshot and release-safety contracts present.');
