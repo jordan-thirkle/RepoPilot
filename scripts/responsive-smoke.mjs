@@ -200,7 +200,7 @@ try {
 
     const primaryNav = page.locator('.primary-nav');
     const sourceLink = page.locator('.primary-nav .source-link');
-    const chatCta = page.locator('.hero-actions .button-primary');
+    const chatCta = page.locator('.button-primary');
     assert.equal(await primaryNav.isVisible(), true, `Primary navigation must stay visible at ${width}px`);
     assert.equal(await sourceLink.isVisible(), true, `Repository link must stay available at ${width}px`);
     const chatCtaBounds = await chatCta.boundingBox();
