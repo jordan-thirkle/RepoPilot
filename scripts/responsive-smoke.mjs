@@ -180,9 +180,9 @@ try {
     assert.ok(metrics.ctaHeight >= 44, `Primary CTA target too short at ${width}px: ${metrics.ctaHeight}px`);
     assert.equal(metrics.pageTitle, 'RepoPilot | GitHub coding assistant for ChatGPT');
     assert.match(metrics.headingText, /GitHub coding assistant for ChatGPT/i, 'main heading should name the product category');
-    assert.match(await page.locator('main').innerText(), /Fix bugs/, 'bug-fixing use case must be visible');
-    assert.match(await page.locator('main').innerText(), /Open pull requests/, 'pull-request use case must be visible');
-    assert.match(await page.locator('main').innerText(), /Troubleshoot GitHub Actions/, 'GitHub Actions use case must be visible');
+    assert.match(await page.locator('main').innerText(), /fix bugs/i, 'bug-fixing use case must be visible');
+    assert.match(await page.locator('main').innerText(), /open pull requests/i, 'pull-request use case must be visible');
+    assert.match(await page.locator('main').innerText(), /troubleshoot failed GitHub Actions/i, 'GitHub Actions use case must be visible');
     if ((width === 390 && height === 844) || (width === 1440 && height === 900)) {
       assert.ok(metrics.documentHeight <= height + 1, `Compact layout should fit one viewport at ${width}x${height}: page is ${metrics.documentHeight}px tall`);
     }
