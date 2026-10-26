@@ -42,6 +42,6 @@ assert.match(stale.stderr, /live deployment revision mismatch/, 'stale revision 
 const brokenAsset = runSmoke('http-error');
 assert.equal(brokenAsset.error, undefined, brokenAsset.error?.message);
 assert.notEqual(brokenAsset.status, 0, 'smoke test must fail when a critical asset returns HTTP 503');
-assert.match(brokenAsset.stderr, /application script returned HTTP 503/, 'asset failure should identify the broken resource');
+assert.match(brokenAsset.stderr, /stylesheet returned HTTP 503/, 'asset failure should identify the broken resource');
 
 console.log('Post-deploy smoke behavior passed: healthy deployment accepted; stale revision and failing critical asset rejected (no network used).');
