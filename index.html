@@ -6,11 +6,11 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f7f8f5" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#11140f" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="Tell ChatGPT what needs doing in GitHub. RepoPilot helps with repository research, code changes, pull requests and CI—with evidence-backed results.">
+  <meta name="description" content="Tell ChatGPT what needs doing in GitHub. RepoPilot helps with repository research, focused code changes, pull requests and CI—with evidence-backed results.">
   <link rel="canonical" href="https://jordan-thirkle.github.io/RepoPilot/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="RepoPilot — GitHub work, in your words">
-  <meta property="og:description" content="Describe the GitHub task. Get the changes, links and evidence of what actually ran.">
+  <meta property="og:description" content="Describe the task. Get the changes, links and evidence of what actually ran.">
   <meta property="og:url" content="https://jordan-thirkle.github.io/RepoPilot/">
   <meta name="twitter:card" content="summary">
   <title>RepoPilot — GitHub work, in your words</title>
@@ -26,131 +26,68 @@
       <span class="brand-mark" aria-hidden="true">RP</span>
       <span class="brand-name">RepoPilot</span>
     </a>
-
     <nav class="desktop-nav" aria-label="Main navigation">
-      <a href="#workflow">How it works</a>
-      <a href="#examples">Examples</a>
+      <a class="source-link" href="https://github.com/jordan-thirkle/RepoPilot">GitHub source <span aria-hidden="true">↗</span></a>
       <a class="button button-dark nav-cta" href="https://chatgpt.com/plugins/plugins_6adcd2f31dc08191b79ad455e7d81e94" target="_blank" rel="noopener noreferrer">Open in ChatGPT <span aria-hidden="true">↗</span></a>
     </nav>
-
-    <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation">
-      <span class="menu-icon" aria-hidden="true"></span>
-    </button>
   </header>
 
-  <nav class="mobile-nav container" id="mobile-nav" aria-label="Mobile navigation" hidden>
-    <a href="#workflow">How it works</a>
-    <a href="#examples">Examples</a>
-    <a href="https://github.com/jordan-thirkle/RepoPilot">GitHub repository ↗</a>
-    <a href="https://chatgpt.com/plugins/plugins_6adcd2f31dc08191b79ad455e7d81e94" target="_blank" rel="noopener noreferrer">Open in ChatGPT ↗</a>
-  </nav>
-
-  <main id="main">
-    <section class="hero container" id="top" aria-labelledby="hero-title">
+  <main class="site-main container" id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> GITHUB WORK, THROUGH CHATGPT</p>
-        <h1 id="hero-title">GitHub changes.<br><span>By asking.</span></h1>
-        <p class="hero-description">RepoPilot adds a repeatable delivery workflow around connected GitHub tools: inspect the right repository, make focused changes, check CI and review the diff, then verify delivery when available. It adds workflow guidance—not extra GitHub permissions—and reports what was actually verified.</p>
-
+        <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> GITHUB WORKFLOW FOR CHATGPT</p>
+        <h1 id="hero-title">GitHub work,<br><span>minus the busywork.</span></h1>
+        <p class="hero-description">Describe the outcome. RepoPilot helps inspect a repository, make focused changes, run checks and review the diff — then reports what was actually verified.</p>
         <div class="hero-actions">
-          <a class="button button-primary" href="https://chatgpt.com/plugins/plugins_6adcd2f31dc08191b79ad455e7d81e94" target="_blank" rel="noopener noreferrer">Open RepoPilot <span aria-hidden="true">↗</span></a>
+          <a class="button button-primary" href="https://chatgpt.com/plugins/plugins_6adcd2f31dc08191b79ad455e7d81e94" target="_blank" rel="noopener noreferrer">Try RepoPilot <span aria-hidden="true">↗</span></a>
           <a class="button button-light" href="https://github.com/jordan-thirkle/RepoPilot">View source <span aria-hidden="true">↗</span></a>
         </div>
-
-        <p class="beta-note"><span class="status-dot" aria-hidden="true"></span><span>Private beta. Access depends on your ChatGPT session and GitHub permissions.</span></p>
+        <p class="beta-note"><span class="status-dot" aria-hidden="true"></span><span><strong>Private beta.</strong> Works within your connected GitHub access. No extra permissions or unverified success claims.</span></p>
       </div>
 
-      <div class="preview" role="group" aria-label="Illustrative RepoPilot task preview">
-        <div class="preview-header">
-          <span class="preview-brand" aria-hidden="true">RP</span>
-          <div class="preview-heading"><strong>From request to proof</strong><span>Example workflow</span></div>
-          <span class="preview-tag">EXAMPLE</span>
-        </div>
-        <div class="request">
-          <span class="preview-label">YOUR REQUEST</span>
-          <p>“Fix the failing tests and open a pull request.”</p>
-        </div>
-        <ol class="preview-steps">
-          <li><span class="step-number">01</span><div><strong>Inspect</strong><p>Read project guidance and trace the failure.</p></div></li>
-          <li><span class="step-number">02</span><div><strong>Make the change</strong><p>Keep the fix focused and reviewable.</p></div></li>
-          <li><span class="step-number">03</span><div><strong>Show the proof</strong><p>Link the PR and report which checks ran.</p></div></li>
-        </ol>
-        <p class="preview-footnote">Illustrative only — not a live run.</p>
-      </div>
-    </section>
-
-    <section class="workflow-section" id="workflow" aria-labelledby="workflow-title">
-      <div class="container">
-        <div class="section-heading">
-          <p class="eyebrow">ONE SIMPLE WORKFLOW</p>
-          <h2 id="workflow-title">Ask. Build. <span>Verify.</span></h2>
-        </div>
-        <div class="workflow-grid">
-          <article class="workflow-step">
-            <span class="workflow-number">01</span>
-            <div><h3>Say what you need</h3><p>Use normal language. Add a repo link when useful.</p></div>
-          </article>
-          <article class="workflow-step">
-            <span class="workflow-number">02</span>
-            <div><h3>Get the work done</h3><p>Use the connected tools and follow repo guidance.</p></div>
-          </article>
-          <article class="workflow-step">
-            <span class="workflow-number">03</span>
-            <div><h3>See what’s real</h3><p>Get links, test results and honest limits.</p></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="examples-section" id="examples" aria-labelledby="examples-title">
-      <div class="container examples-inner">
-        <div class="examples-heading">
+      <aside class="task-panel" role="group" aria-label="Quick-start prompt examples">
+        <div class="task-panel-heading">
           <div>
-            <p class="eyebrow">START WITH A TASK</p>
-            <h2 id="examples-title">What needs doing?</h2>
+            <p class="eyebrow panel-eyebrow">QUICK START</p>
+            <h2 id="prompts-title">Start with a task</h2>
           </div>
-          <p>Copy a prompt, swap in your details and send it in ChatGPT.</p>
+          <span class="mini-label">3 PROMPTS</span>
         </div>
+        <p class="panel-description">Copy one, paste it into ChatGPT.</p>
 
         <div class="prompt-list">
           <article class="prompt-row">
             <div class="prompt-content">
               <span class="prompt-type">FIX A BUG</span>
-              <p>Inspect <code>owner/repo</code>, find the root cause, fix it, run the relevant tests and open a pull request.</p>
+              <p>Trace the cause, fix it, run tests and open a pull request.</p>
             </div>
-            <button class="copy-button" type="button" data-copy="Inspect owner/repo, find the root cause, fix it, run the relevant tests and open a pull request." aria-label="Copy bug-fix prompt">Copy <span aria-hidden="true">↗</span></button>
+            <button class="copy-button" type="button" data-copy="Inspect owner/repo, trace the root cause, fix it, run the relevant tests and open a pull request." aria-label="Copy bug-fix prompt">Copy <span aria-hidden="true">↗</span></button>
           </article>
           <article class="prompt-row">
             <div class="prompt-content">
               <span class="prompt-type">UNDERSTAND A REPO</span>
-              <p>Explain this repo’s structure, key dependencies, test commands and biggest maintenance risks.</p>
+              <p>Map the structure, key dependencies and biggest maintenance risks.</p>
             </div>
-            <button class="copy-button" type="button" data-copy="Explain this repo’s structure, key dependencies, test commands and biggest maintenance risks." aria-label="Copy repository review prompt">Copy <span aria-hidden="true">↗</span></button>
+            <button class="copy-button" type="button" data-copy="Explain owner/repo: map its structure, key dependencies, test commands and biggest maintenance risks." aria-label="Copy repository-review prompt">Copy <span aria-hidden="true">↗</span></button>
           </article>
           <article class="prompt-row">
             <div class="prompt-content">
-              <span class="prompt-type">FIX CI</span>
-              <p>Investigate the latest failed GitHub Actions run, fix the cause where possible and verify the result.</p>
+              <span class="prompt-type">UNBLOCK CI</span>
+              <p>Find the root cause of the latest failed Actions run and verify the fix.</p>
             </div>
-            <button class="copy-button" type="button" data-copy="Investigate the latest failed GitHub Actions run, fix the cause where possible and verify the result." aria-label="Copy CI investigation prompt">Copy <span aria-hidden="true">↗</span></button>
+            <button class="copy-button" type="button" data-copy="Investigate the latest failed GitHub Actions run, fix the root cause where possible and verify the rerun." aria-label="Copy CI investigation prompt">Copy <span aria-hidden="true">↗</span></button>
           </article>
         </div>
-
         <p class="copy-feedback" id="copy-feedback" role="status" aria-live="polite"></p>
-        <p class="limitations">RepoPilot works within the access and tools available to your session. It never claims a change or test succeeded without evidence.</p>
-      </div>
+      </aside>
     </section>
   </main>
 
   <footer class="site-footer container">
-    <a class="brand footer-brand" href="#top" aria-label="RepoPilot home">
-      <span class="brand-mark" aria-hidden="true">RP</span>
-      <span class="brand-name">RepoPilot</span>
-    </a>
-    <p>By JTT <span aria-hidden="true">·</span> No trackers. No runtime dependencies.</p>
+    <p><span class="footer-mark">BY JTT</span><span aria-hidden="true">·</span> No trackers. No runtime dependencies.</p>
     <div class="footer-links">
-      <a href="https://github.com/jordan-thirkle/RepoPilot">GitHub</a>
-      <a href="https://chatgpt.com/plugins/plugins_6adcd2f31dc08191b79ad455e7d81e94" target="_blank" rel="noopener noreferrer">Open in ChatGPT ↗</a>
+      <a href="https://github.com/jordan-thirkle/RepoPilot">GitHub ↗</a>
+      <a href="https://chatgpt.com/plugins/plugins_6adcd2f31dc08191b79ad455e7d81e94" target="_blank" rel="noopener noreferrer">Open RepoPilot ↗</a>
     </div>
   </footer>
 </body>
