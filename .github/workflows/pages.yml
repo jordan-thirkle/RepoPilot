@@ -40,8 +40,9 @@ jobs:
           node-version: 24
       - name: Install locked browser-test and accessibility dependencies
         run: npm ci
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium headless shell
+        timeout-minutes: 5
+        run: npx playwright install --only-shell chromium
       - name: Test responsive layouts and interactions
         run: npm run test:responsive
         env:
