@@ -29,9 +29,10 @@ assert.match(html, /Private beta/, 'plugin availability must be stated honestly'
 assert.match(html, /permissions/, 'access and permission requirements must be disclosed');
 assert.match(html, /id="main"/, 'main landmark must be identified');
 assert.match(html, /href="#main"/, 'skip link must be present');
-assert.match(html, /role="group" aria-label="Illustrative RepoPilot task preview"/, 'illustrative preview must be clearly labelled');
+assert.match(html, /role="group" aria-label="Quick-start prompt examples"/, 'quick-start prompt panel must be clearly labelled');
 assert.match(html, /aria-label="Main navigation"/, 'desktop navigation must be labelled');
-assert.match(html, /aria-label="Mobile navigation"/, 'mobile navigation must be labelled');
+assert.match(html, /href="https:\/\/github\.com\/jordan-thirkle\/RepoPilot"/, 'repository source link must remain available');
+assert.doesNotMatch(html, /id="mobile-nav"|data-menu-toggle/, 'compact page should not keep redundant menu UI');
 assert.match(html, /aria-live="polite"/, 'copy feedback must be announced politely');
 assert.equal([...html.matchAll(/data-copy="/g)].length, 3, 'three copyable prompt examples should be present');
 assert.match(html, /rel="noopener noreferrer"/, 'new-tab links must protect the opener context');
@@ -71,7 +72,7 @@ assert.match(css, /overflow-wrap:\s*anywhere/, 'long technical tokens must wrap 
 
 assert.match(js, /navigator\.clipboard\.writeText/, 'clipboard API should be used where supported');
 assert.match(js, /execCommand\('copy'\)/, 'a basic clipboard fallback should be available');
-assert.match(js, /event\.key === 'Escape'/, 'mobile navigation must support Escape');
+assert.match(js, /button\.addEventListener\('click'/, 'prompt copy controls must support click and keyboard activation');
 assert.match(js, /originalAriaLabel/, 'copy control must restore its accessible label');
 
 const pinnedActions = [
