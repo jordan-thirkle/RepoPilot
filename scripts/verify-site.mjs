@@ -7,6 +7,7 @@ const html = readFileSync(join(root, 'index.html'), 'utf8');
 const css = readFileSync(join(root, 'styles.css'), 'utf8');
 const js = readFileSync(join(root, 'app.js'), 'utf8');
 const workflow = readFileSync(join(root, '.github/workflows/pages.yml'), 'utf8');
+const gitignore = readFileSync(join(root, '.gitignore'), 'utf8');
 const responsiveScript = readFileSync(join(root, 'scripts/responsive-smoke.mjs'), 'utf8');
 const postDeploySmoke = readFileSync(join(root, 'scripts/post-deploy-smoke.mjs'), 'utf8');
 const siteBuilder = readFileSync(join(root, 'scripts/prepare-site.mjs'), 'utf8');
@@ -97,6 +98,7 @@ assert.match(workflow, /if:\s*always\(\)/, 'screenshots should be uploaded even 
 assert.doesNotMatch(workflow, /^concurrency:\s*$/m, 'pull request runs must not share a global cancellation group');
 assert.match(workflow, /concurrency:\n\s+group: pages-production-\$\{\{ github\.repository \}\}\n\s+cancel-in-progress: false/, 'production deployments must serialize without cancelling the in-progress deployment');
 assert.equal((workflow.match(/persist-credentials: false/g) ?? []).length, 3, 'checkout credentials must not persist into script execution');
+assert.match(gitignore, /^dist\/$/m, 'generated deployment output must be ignored');
 assert.match(workflow, /run: npm run build:site/, 'deployment must build the explicit site allowlist');
 assert.match(workflow, /path: dist\//, 'deployment artifact must exclude repository and CI source files');
 assert.match(workflow, /Smoke-test the live deployment/, 'successful deploy must be followed by a live smoke test');
