@@ -57,12 +57,36 @@ jobs:
           retention-days: 3
           if-no-files-found: warn
 
+  policy:
+    name: Verify main protection
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the current main policy script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Test branch-protection gate logic
+        run: node scripts/check-main-protection.test.mjs
+      - name: Require main to be protected before delivery
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_API_URL: ${{ github.api_url }}
+        run: node scripts/check-main-protection.mjs
+
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     concurrency:
       group: pages-production-${{ github.repository }}
       cancel-in-progress: false
-    needs: [verify, responsive]
+    needs: [verify, responsive, policy]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
