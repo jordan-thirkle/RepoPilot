@@ -71,7 +71,7 @@ assert.match(robots, /Sitemap:\s+https:\/\/jordan-thirkle\.github\.io\/RepoPilot
 assert.match(css, /clamp\(/, 'fluid typography should be used');
 assert.match(css, /minmax\(/, 'layouts should use flexible grid sizing');
 assert.match(css, /@media\s*\(max-width:\s*40rem\)/, 'small-screen layout breakpoint is required');
-assert.match(css, /@media\s*\(max-width:\s*25rem\)/, 'small-screen layout breakpoint is required');
+assert.match(css, /@media\s*\(max-width:\s*22rem\)/, 'extra-narrow layout breakpoint is required');
 assert.match(css, /prefers-color-scheme:\s*dark/, 'dark colour scheme should be supported');
 assert.match(css, /prefers-reduced-motion:\s*reduce/, 'reduced motion preferences must be respected');
 assert.match(css, /:focus-visible/, 'keyboard focus indicators should be visible');
