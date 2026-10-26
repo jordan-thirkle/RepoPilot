@@ -162,6 +162,7 @@ try {
         pageTitle: document.title,
         viewport: window.innerWidth,
         documentWidth: document.documentElement.scrollWidth,
+        documentHeight: document.documentElement.scrollHeight,
         bodyWidth: document.body.scrollWidth,
         headingCount: document.querySelectorAll('h1').length,
         headingLeft: titleBox.left,
@@ -179,6 +180,9 @@ try {
     assert.ok(metrics.headingLeft >= -1 && metrics.headingRight <= width + 1, `Heading escapes viewport at ${width}px`);
     assert.ok(metrics.ctaHeight >= 44, `Primary CTA target too short at ${width}px: ${metrics.ctaHeight}px`);
     assert.equal(metrics.pageTitle, 'RepoPilot — GitHub work, in your words');
+    if ((width === 390 && height === 844) || (width === 1440 && height === 900)) {
+      assert.ok(metrics.documentHeight <= height + 1, `Compact layout should fit one viewport at ${width}x${height}: page is ${metrics.documentHeight}px tall`);
+    }
     assert.deepEqual(pageErrors, [], `JavaScript errors at ${width}px: ${pageErrors.join('; ')}`);
     assert.deepEqual(consoleErrors, [], `Console errors at ${width}px: ${consoleErrors.join('; ')}`);
     assert.deepEqual(httpErrors, [], `Local HTTP error responses at ${width}px: ${httpErrors.join('; ')}`);
@@ -191,25 +195,13 @@ try {
       console.log('PASS axe-core: no WCAG 2.0/2.1 A/AA or WCAG 2.2 AA violations on the light theme');
     }
 
-    const menu = page.locator('[data-menu-toggle]');
-    const desktopNav = page.locator('.desktop-nav');
-    const mobileNav = page.locator('#mobile-nav');
-
-    if (width <= 768) {
-      assert.equal(await menu.isVisible(), true, `Mobile menu missing at ${width}px`);
-      await menu.focus();
-      assert.equal(await menu.evaluate((element) => element === document.activeElement), true, `Mobile menu cannot receive keyboard focus at ${width}px`);
-      await page.keyboard.press('Enter');
-      assert.equal(await menu.getAttribute('aria-expanded'), 'true', `Keyboard activation did not expand menu at ${width}px`);
-      assert.equal(await mobileNav.isVisible(), true, `Expanded navigation is not visible at ${width}px`);
-      await page.keyboard.press('Escape');
-      assert.equal(await menu.getAttribute('aria-expanded'), 'false', `Escape did not close menu at ${width}px`);
-      assert.equal(await mobileNav.isVisible(), false, `Escape did not hide menu at ${width}px`);
-      assert.equal(await menu.evaluate((element) => element === document.activeElement), true, `Escape did not restore menu focus at ${width}px`);
-    } else {
-      assert.equal(await menu.isVisible(), false, `Mobile menu should be hidden at ${width}px`);
-      assert.equal(await desktopNav.isVisible(), true, `Desktop navigation should be visible at ${width}px`);
-    }
+    const primaryNav = page.locator('.primary-nav');
+    const sourceLink = page.locator('.site-footer .footer-links a[href="https://github.com/jordan-thirkle/RepoPilot"]');
+    const chatCta = page.locator('.nav-cta');
+    assert.equal(await primaryNav.isVisible(), true, `Primary navigation must stay visible at ${width}px`);
+    assert.equal(await sourceLink.isVisible(), true, `Repository link must stay available at ${width}px`);
+    const chatCtaBounds = await chatCta.boundingBox();
+    assert.ok(chatCtaBounds && chatCtaBounds.height >= 44, `Header CTA target is too short at ${width}px`);
 
     if (width === 390) {
       const firstCopy = page.locator('[data-copy]').first();
