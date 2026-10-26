@@ -54,8 +54,15 @@ const screenshotDirectory = join(root, 'artifacts', 'screenshots');
 await mkdir(screenshotDirectory, { recursive: true });
 const screenshotManifest = {
   repository: process.env.GITHUB_REPOSITORY ?? 'local',
+  // For pull_request events GITHUB_SHA is the merge ref actually tested;
+  // headRevision/baseRevision identify the PR source and target for comparison.
   sourceRevision: process.env.GITHUB_SHA ?? 'unknown',
+  headRevision: process.env.REPOPILOT_HEAD_SHA ?? process.env.GITHUB_SHA ?? 'unknown',
+  baseRevision: process.env.REPOPILOT_BASE_SHA || null,
   eventName: process.env.GITHUB_EVENT_NAME ?? 'local',
+  ref: process.env.GITHUB_REF ?? 'unknown',
+  workflowRunId: process.env.GITHUB_RUN_ID ?? null,
+  runAttempt: process.env.GITHUB_RUN_ATTEMPT ? Number(process.env.GITHUB_RUN_ATTEMPT) : null,
   captures: []
 };
 let suitePassed = false;
