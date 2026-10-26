@@ -18,7 +18,7 @@ const contents = new Map([
 ]);
 
 globalThis.fetch = async (input) => {
-  const url = new URL(typeof input === 'string' ? input : input.url);
+  const url = new URL(input instanceof URL ? input.href : typeof input === 'string' ? input : input.url);
   if (url.origin !== 'https://jordan-thirkle.github.io') {
     throw new Error(`Mock fetch blocked unexpected origin: ${url.origin}`);
   }
