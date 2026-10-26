@@ -57,12 +57,51 @@ jobs:
           retention-days: 3
           if-no-files-found: warn
 
+  policy:
+    name: Verify main protection
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Require main to be protected before delivery
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_API_URL: ${{ github.api_url }}
+        run: |
+          node --input-type=module <<'NODE'
+          const repository = process.env.GITHUB_REPOSITORY;
+          if (!repository || !/^[\w.-]+\/[\w.-]+$/.test(repository)) {
+            throw new Error('GITHUB_REPOSITORY is missing or malformed; refusing to infer protection.');
+          }
+          const apiRoot = (process.env.GITHUB_API_URL || 'https://api.github.com').replace(/\/$/, '');
+          const response = await fetch(`${apiRoot}/repos/${repository}/branches/main`, {
+            headers: {
+              Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+            }
+          });
+          if (!response.ok) {
+            throw new Error(`GitHub branch metadata request failed with HTTP ${response.status}; refusing production delivery because protection cannot be verified.`);
+          }
+          const branch = await response.json();
+          if (branch.protected !== true) {
+            throw new Error('GitHub reports main as unprotected. Enable an active branch protection rule or ruleset; deployment is blocked until protection is verified.');
+          }
+          console.log('PASS: GitHub reports main protected; delivery may proceed to the remaining checks.');
+          NODE
+
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     concurrency:
       group: pages-production-${{ github.repository }}
       cancel-in-progress: false
-    needs: [verify, responsive]
+    needs: [verify, responsive, policy]
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
