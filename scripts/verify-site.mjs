@@ -5,7 +5,6 @@ import { join } from 'node:path';
 const root = process.cwd();
 const html = readFileSync(join(root, 'index.html'), 'utf8');
 const css = readFileSync(join(root, 'styles.css'), 'utf8');
-const js = readFileSync(join(root, 'app.js'), 'utf8');
 const workflow = readFileSync(join(root, '.github/workflows/pages.yml'), 'utf8');
 const gitignore = readFileSync(join(root, '.gitignore'), 'utf8');
 const responsiveScript = readFileSync(join(root, 'scripts/responsive-smoke.mjs'), 'utf8');
@@ -25,16 +24,25 @@ assert.match(html, /rel="canonical"/, 'canonical URL is required');
 assert.match(html, /property="og:title"/, 'social preview title is required');
 assert.match(html, /name="twitter:card"/, 'social card metadata is required');
 assert.equal([...html.matchAll(/<h1\b/g)].length, 1, 'the page must have exactly one primary heading');
+assert.match(html, /<title>RepoPilot \| GitHub coding assistant for ChatGPT<\/title>/, 'page title must clearly describe the product');
+assert.match(html, /<h1[^>]*>A GitHub coding assistant for ChatGPT\.<\/h1>/, 'main heading must clearly say what RepoPilot is');
+assert.match(html, /name="description" content="[^"]*GitHub bugs[^"]*GitHub Actions/, 'SEO description must use natural product/search language');
+assert.match(html, /fix bugs/i, 'common bug-fixing use case must be clear');
+assert.match(html, /open pull requests/i, 'pull-request use case must be clear');
+assert.match(html, /troubleshoot failed GitHub Actions/i, 'GitHub Actions use case must be clear');
+assert.match(html, /existing GitHub connection/i, 'the integration model must be explained plainly');
+assert.match(html, /which checks actually ran/i, 'evidence-based reporting must be explained plainly');
 assert.match(html, /Private beta/, 'plugin availability must be stated honestly');
-assert.match(html, /permissions/, 'access and permission requirements must be disclosed');
+assert.match(html, /permissions/i, 'access and permission requirements must be disclosed');
 assert.match(html, /id="main"/, 'main landmark must be identified');
 assert.match(html, /href="#main"/, 'skip link must be present');
-assert.match(html, /role="group" aria-label="Quick-start prompt examples"/, 'quick-start prompt panel must be clearly labelled');
-assert.match(html, /aria-label="Main navigation"/, 'desktop navigation must be labelled');
+assert.match(html, /aria-label="Main navigation"/, 'primary navigation must be labelled');
 assert.match(html, /href="https:\/\/github\.com\/jordan-thirkle\/RepoPilot"/, 'repository source link must remain available');
-assert.doesNotMatch(html, /id="mobile-nav"|data-menu-toggle/, 'compact page should not keep redundant menu UI');
-assert.match(html, /aria-live="polite"/, 'copy feedback must be announced politely');
-assert.equal([...html.matchAll(/data-copy="/g)].length, 3, 'three copyable prompt examples should be present');
+assert.match(html, /Open RepoPilot in ChatGPT/, 'primary action must clearly state its destination');
+assert.doesNotMatch(html, /data-copy=|copy-feedback|mobile-nav|data-menu-toggle|task-list/, 'redundant prompt-copy, task-list and mobile-menu UI must not return');
+assert.match(html, /application\/ld\+json/, 'software metadata should be available to search engines');
+assert.match(html, /SoftwareApplication/, 'structured software metadata must describe the product');
+assert.doesNotMatch(html, /<script[^>]+src=/i, 'the static landing page must not load a client-side JavaScript bundle');
 assert.match(html, /rel="noopener noreferrer"/, 'new-tab links must protect the opener context');
 assert.doesNotMatch(html, /<script[^>]+src="https?:\/\//i, 'runtime scripts must not load from third parties');
 assert.doesNotMatch(html, /google-analytics|googletagmanager|plausible\.io|hotjar/i, 'site must remain free of tracking scripts');
@@ -62,18 +70,16 @@ assert.match(robots, /Sitemap:\s+https:\/\/jordan-thirkle\.github\.io\/RepoPilot
 
 assert.match(css, /clamp\(/, 'fluid typography should be used');
 assert.match(css, /minmax\(/, 'layouts should use flexible grid sizing');
-assert.match(css, /@media\s*\(max-width:\s*48rem\)/, 'mobile navigation/layout breakpoint is required');
-assert.match(css, /@media\s*\(max-width:\s*25rem\)/, 'small-screen layout breakpoint is required');
+assert.match(css, /@media\s*\(max-width:\s*40rem\)/, 'small-screen layout breakpoint is required');
+assert.match(css, /@media\s*\(max-width:\s*22rem\)/, 'extra-narrow layout breakpoint is required');
 assert.match(css, /prefers-color-scheme:\s*dark/, 'dark colour scheme should be supported');
 assert.match(css, /prefers-reduced-motion:\s*reduce/, 'reduced motion preferences must be respected');
 assert.match(css, /:focus-visible/, 'keyboard focus indicators should be visible');
 assert.match(css, /min-height:\s*2\.875rem/, 'interactive targets should be comfortably touchable');
 assert.match(css, /overflow-wrap:\s*anywhere/, 'long technical tokens must wrap safely');
 
-assert.match(js, /navigator\.clipboard\.writeText/, 'clipboard API should be used where supported');
-assert.match(js, /execCommand\('copy'\)/, 'a basic clipboard fallback should be available');
-assert.match(js, /button\.addEventListener\('click'/, 'prompt copy controls must support click and keyboard activation');
-assert.match(js, /originalAriaLabel/, 'copy control must restore its accessible label');
+assert.doesNotMatch(html, /app\.js|data-copy=/, 'unused JavaScript and prompt-copy code must not be shipped');
+assert.doesNotMatch(siteBuilder, /app\.js/, 'the public asset allowlist should not ship unused JavaScript');
 
 const pinnedActions = [
   ['actions/checkout', '3d3c42e5aac5ba805825da76410c181273ba90b1', 'v7.0.1'],
@@ -105,7 +111,7 @@ assert.match(responsiveScript, /page\.screenshot\(/, 'browser checks should capt
 assert.match(responsiveScript, /runAxeAudit/, 'browser checks should run automated axe-core WCAG scans');
 assert.match(responsiveScript, /response\.status\(\) >= 400/, 'browser checks should fail for local HTTP error responses');
 assert.match(responsiveScript, /consoleErrors/, 'browser checks should collect console errors');
-assert.match(responsiveScript, /keyboard\.press\('Enter'\)/, 'browser checks should test keyboard activation');
+assert.match(responsiveScript, /page\.locator\('\.button-primary'\)/, 'browser checks should test the primary CTA');
 assert.match(responsiveScript, /darkViolations/, 'browser checks should scan the dark theme for accessibility violations');
 assert.match(responsiveScript, /fullPage:\s*true/, 'visual evidence should include full-page captures');
 assert.match(responsiveScript, /mobile-390x844/, 'mobile screenshot should be generated');
