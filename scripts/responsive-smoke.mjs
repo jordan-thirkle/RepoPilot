@@ -3,7 +3,29 @@ import { createServer } from 'node:http';
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { extname, join, resolve, sep } from 'node:path';
+import { createRequire } from 'node:module';
 import { chromium } from 'playwright';
+
+const require = createRequire(import.meta.url);
+const axeCorePath = require.resolve('axe-core');
+
+async function runAxeAudit(page) {
+  await page.addScriptTag({ path: axeCorePath });
+  return page.evaluate(async () => {
+    const results = await window.axe.run(document, {
+      runOnly: {
+        type: 'tag',
+        values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
+      }
+    });
+    return results.violations.map((violation) => ({
+      id: violation.id,
+      impact: violation.impact,
+      help: violation.help,
+      targets: violation.nodes.map((node) => node.target.join(' '))
+    }));
+  });
+}
 
 const root = resolve(process.cwd());
 const mimeTypes = {
@@ -85,10 +107,20 @@ try {
     await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: baseUrl });
     const page = await context.newPage();
     const pageErrors = [];
+    const consoleErrors = [];
+    const httpErrors = [];
     const failedLocalRequests = [];
     const externalRequests = [];
 
     page.on('pageerror', (error) => pageErrors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('response', (response) => {
+      if (response.url().startsWith(baseUrl) && response.status() >= 400) {
+        httpErrors.push(`${response.status()} ${response.url()}`);
+      }
+    });
     page.on('requestfailed', (request) => {
       if (request.url().startsWith(baseUrl)) failedLocalRequests.push(request.url());
       else externalRequests.push(request.url());
@@ -97,7 +129,8 @@ try {
       if (!request.url().startsWith(baseUrl)) externalRequests.push(request.url());
     });
 
-    await page.goto(baseUrl, { waitUntil: 'networkidle' });
+    const documentResponse = await page.goto(baseUrl, { waitUntil: 'networkidle' });
+    assert.equal(documentResponse?.status(), 200, `Homepage must return HTTP 200 at ${width}px`);
 
     // Keep a compact visual record at one real mobile and desktop size.
     // Capture before assertions so a broken layout can still be inspected in CI.
@@ -147,8 +180,16 @@ try {
     assert.ok(metrics.ctaHeight >= 44, `Primary CTA target too short at ${width}px: ${metrics.ctaHeight}px`);
     assert.equal(metrics.pageTitle, 'RepoPilot — GitHub work, in your words');
     assert.deepEqual(pageErrors, [], `JavaScript errors at ${width}px: ${pageErrors.join('; ')}`);
+    assert.deepEqual(consoleErrors, [], `Console errors at ${width}px: ${consoleErrors.join('; ')}`);
+    assert.deepEqual(httpErrors, [], `Local HTTP error responses at ${width}px: ${httpErrors.join('; ')}`);
     assert.deepEqual(failedLocalRequests, [], `Local assets failed at ${width}px`);
     assert.deepEqual(externalRequests, [], `Unexpected external network requests at ${width}px`);
+
+    if (width === 390) {
+      const violations = await runAxeAudit(page);
+      assert.deepEqual(violations, [], `axe-core WCAG violations on the light theme: ${JSON.stringify(violations)}`);
+      console.log('PASS axe-core: no WCAG 2.0/2.1 A/AA or WCAG 2.2 AA violations on the light theme');
+    }
 
     const menu = page.locator('[data-menu-toggle]');
     const desktopNav = page.locator('.desktop-nav');
@@ -156,8 +197,10 @@ try {
 
     if (width <= 768) {
       assert.equal(await menu.isVisible(), true, `Mobile menu missing at ${width}px`);
-      await menu.click();
-      assert.equal(await menu.getAttribute('aria-expanded'), 'true', `Menu did not expand at ${width}px`);
+      await menu.focus();
+      assert.equal(await menu.evaluate((element) => element === document.activeElement), true, `Mobile menu cannot receive keyboard focus at ${width}px`);
+      await page.keyboard.press('Enter');
+      assert.equal(await menu.getAttribute('aria-expanded'), 'true', `Keyboard activation did not expand menu at ${width}px`);
       assert.equal(await mobileNav.isVisible(), true, `Expanded navigation is not visible at ${width}px`);
       await page.keyboard.press('Escape');
       assert.equal(await menu.getAttribute('aria-expanded'), 'false', `Escape did not close menu at ${width}px`);
@@ -172,7 +215,8 @@ try {
       const firstCopy = page.locator('[data-copy]').first();
       const copyBounds = await firstCopy.boundingBox();
       assert.ok(copyBounds && copyBounds.width >= 44 && copyBounds.height >= 44, 'Copy prompt button must have a usable touch target');
-      await firstCopy.click();
+      await firstCopy.focus();
+      await page.keyboard.press('Enter');
       await page.waitForFunction(
         () => /Prompt copied|Copy was blocked/.test(document.querySelector('#copy-feedback')?.textContent ?? ''),
         null,
@@ -197,10 +241,24 @@ try {
     reducedMotion: 'reduce'
   });
   const darkPage = await darkContext.newPage();
-  await darkPage.goto(baseUrl, { waitUntil: 'networkidle' });
+  const darkPageErrors = [];
+  const darkConsoleErrors = [];
+  const darkHttpErrors = [];
+  darkPage.on('pageerror', (error) => darkPageErrors.push(error.message));
+  darkPage.on('console', (message) => { if (message.type() === 'error') darkConsoleErrors.push(message.text()); });
+  darkPage.on('response', (response) => {
+    if (response.url().startsWith(baseUrl) && response.status() >= 400) darkHttpErrors.push(`${response.status()} ${response.url()}`);
+  });
+  const darkResponse = await darkPage.goto(baseUrl, { waitUntil: 'networkidle' });
+  assert.equal(darkResponse?.status(), 200, 'Homepage must return HTTP 200 in dark mode');
   const darkBackground = await darkPage.locator('body').evaluate((element) => getComputedStyle(element).backgroundColor);
   assert.equal(darkBackground, 'rgb(17, 20, 15)', `Dark theme did not apply: ${darkBackground}`);
-  console.log('PASS dark scheme: system preference is respected');
+  const darkViolations = await runAxeAudit(darkPage);
+  assert.deepEqual(darkViolations, [], `axe-core WCAG violations on the dark theme: ${JSON.stringify(darkViolations)}`);
+  assert.deepEqual(darkPageErrors, [], `JavaScript errors in dark mode: ${darkPageErrors.join('; ')}`);
+  assert.deepEqual(darkConsoleErrors, [], `Console errors in dark mode: ${darkConsoleErrors.join('; ')}`);
+  assert.deepEqual(darkHttpErrors, [], `Local HTTP errors in dark mode: ${darkHttpErrors.join('; ')}`);
+  console.log('PASS dark scheme and axe-core: preference is respected with no scanned WCAG violations');
   await darkContext.close();
 
   console.log(`Responsive browser checks passed across ${viewportSizes.length} viewport sizes, plus dark mode and menu/copy interactions.`);
