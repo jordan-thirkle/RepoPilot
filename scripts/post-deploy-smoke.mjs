@@ -22,7 +22,6 @@ baseUrl.hash = '';
 const resources = [
   { path: '', name: 'homepage' },
   { path: 'styles.css', name: 'stylesheet' },
-  { path: 'app.js', name: 'application script' },
   { path: 'assets/favicon.svg', name: 'favicon' },
   { path: 'robots.txt', name: 'robots.txt' },
   { path: 'sitemap.xml', name: 'sitemap.xml' },
@@ -48,17 +47,18 @@ async function validateLiveSite() {
   const bodyByPath = new Map(responses.map(({ resource, body }) => [resource.path, body]));
   const html = bodyByPath.get('');
   const css = bodyByPath.get('styles.css');
-  const js = bodyByPath.get('app.js');
   const favicon = bodyByPath.get('assets/favicon.svg');
   const robots = bodyByPath.get('robots.txt');
   const sitemap = bodyByPath.get('sitemap.xml');
   const info = JSON.parse(bodyByPath.get('deployment-info.json'));
 
-  assert.match(html, /<title>RepoPilot — GitHub work, in your words<\/title>/, 'live homepage title mismatch');
-  assert.match(html, /name="description"/, 'live homepage SEO description is missing');
+  assert.match(html, /<title>RepoPilot \| GitHub coding assistant for ChatGPT<\/title>/, 'live homepage title mismatch');
+  assert.match(html, /name="description" content="[^"]*GitHub bugs[^"]*GitHub Actions/, 'live homepage SEO description is missing key use cases');
+  assert.match(html, /<h1[^>]*>A GitHub coding assistant for ChatGPT\.<\/h1>/, 'live homepage product heading is unclear');
   assert.match(html, /Private beta/i, 'live homepage must retain the private-beta disclosure');
+  assert.match(html, /application\/ld\+json/, 'live homepage software metadata is missing');
+  assert.doesNotMatch(html, /app\.js|data-copy=/, 'live homepage must not load or reference old prompt-copy JavaScript');
   assert.match(css, /:focus-visible/, 'live CSS does not contain expected accessibility focus styles');
-  assert.match(js, /navigator\.clipboard\.writeText/, 'live JavaScript does not contain copy behavior');
   assert.match(favicon, /<svg\b/, 'live favicon is not SVG');
   assert.match(robots, /Sitemap:\s*https:\/\/jordan-thirkle\.github\.io\/RepoPilot\/sitemap\.xml/i, 'live robots.txt sitemap declaration is missing');
   assert.match(sitemap, /https:\/\/jordan-thirkle\.github\.io\/RepoPilot\//, 'live sitemap is missing the canonical Pages URL');
