@@ -1,2 +1,5 @@
 # Browser-test screenshots are CI outputs, not website source.
 artifacts/screenshots/
+
+# Generated allowlisted Pages output.
+dist/

@@ -5,8 +5,9 @@
   "description": "Minimal, responsive GitHub Pages website for RepoPilot.",
   "scripts": {
     "test": "npm run verify",
-    "verify": "node scripts/verify-site.mjs",
-    "test:responsive": "node scripts/responsive-smoke.mjs"
+    "verify": "node --check scripts/post-deploy-smoke.mjs && node scripts/post-deploy-smoke.test.mjs && node scripts/verify-site.mjs && npm run build:site && node scripts/verify-dist.mjs",
+    "test:responsive": "node scripts/responsive-smoke.mjs",
+    "build:site": "node scripts/prepare-site.mjs"
   },
   "engines": {
     "node": ">=20"

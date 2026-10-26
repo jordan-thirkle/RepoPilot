@@ -20,9 +20,9 @@ Pull requests also generate short-lived visual evidence from the real browser su
 
 ## Deploy and verify
 
-The `.github/workflows/pages.yml` workflow checks the source and deploys it from `main`. It also supports manual runs via **Actions → Verify and deploy RepoPilot Pages → Run workflow**.
+The `.github/workflows/pages.yml` workflow validates the source, runs browser checks, builds an allowlisted `dist/` directory, and deploys it from `main`. It supports manual runs via **Actions → Verify and deploy RepoPilot Pages → Run workflow**. Pull-request jobs run independently; production deployments serialize without cancelling the deployment already in progress.
 
-A successful commit is not proof of a successful deployment. Check the Actions run and the deployment URL it reports.
+The Pages artifact contains only the public HTML/CSS/JS, site metadata and favicon—not the repository README, design source, test scripts or workflow files. The deploy job then smoke-tests the live URL, including its expected commit SHA from `deployment-info.json`, the homepage, core assets, robots.txt and sitemap. A successful commit or provider deployment alone is not proof of a healthy live site; check the full Actions run.
 
 For local checks, use Node.js 20+:
 

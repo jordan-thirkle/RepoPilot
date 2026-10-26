@@ -7,7 +7,12 @@ const html = readFileSync(join(root, 'index.html'), 'utf8');
 const css = readFileSync(join(root, 'styles.css'), 'utf8');
 const js = readFileSync(join(root, 'app.js'), 'utf8');
 const workflow = readFileSync(join(root, '.github/workflows/pages.yml'), 'utf8');
+const gitignore = readFileSync(join(root, '.gitignore'), 'utf8');
 const responsiveScript = readFileSync(join(root, 'scripts/responsive-smoke.mjs'), 'utf8');
+const postDeploySmoke = readFileSync(join(root, 'scripts/post-deploy-smoke.mjs'), 'utf8');
+const siteBuilder = readFileSync(join(root, 'scripts/prepare-site.mjs'), 'utf8');
+const distVerifier = readFileSync(join(root, 'scripts/verify-dist.mjs'), 'utf8');
+const packageJson = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 const sitemap = readFileSync(join(root, 'sitemap.xml'), 'utf8');
 const robots = readFileSync(join(root, 'robots.txt'), 'utf8');
 
@@ -89,4 +94,23 @@ assert.match(workflow, /retention-days:\s*3/, 'screenshot evidence should have s
 assert.match(workflow, /path:\s*artifacts\/screenshots\//, 'only the screenshot output folder should be uploaded');
 assert.match(workflow, /if:\s*always\(\)/, 'screenshots should be uploaded even when browser tests fail');
 
-console.log('Static checks passed: ' + ids.length + ' unique IDs, ' + links.length + ' links and ' + localAssets.length + ' local asset references; screenshot evidence contract present.');
+
+assert.doesNotMatch(workflow, /^concurrency:\s*$/m, 'pull request runs must not share a global cancellation group');
+assert.match(workflow, /concurrency:\n\s+group: pages-production-\$\{\{ github\.repository \}\}\n\s+cancel-in-progress: false/, 'production deployments must serialize without cancelling the in-progress deployment');
+assert.equal((workflow.match(/persist-credentials: false/g) ?? []).length, 3, 'checkout credentials must not persist into script execution');
+assert.match(gitignore, /^dist\/$/m, 'generated deployment output must be ignored');
+assert.match(workflow, /run: npm run build:site/, 'deployment must build the explicit site allowlist');
+assert.match(workflow, /path: dist\//, 'deployment artifact must exclude repository and CI source files');
+assert.match(workflow, /Smoke-test the live deployment/, 'successful deploy must be followed by a live smoke test');
+assert.match(workflow, /post-deploy-smoke\.mjs/, 'post-deploy smoke script must be invoked');
+assert.equal(packageJson.scripts['build:site'], 'node scripts/prepare-site.mjs', 'site allowlist build command must be defined');
+assert.match(packageJson.scripts.verify, /node --check scripts\/post-deploy-smoke\.mjs/, 'post-deploy script syntax must be checked in CI');
+assert.match(packageJson.scripts.verify, /verify-dist\.mjs/, 'verify must validate the built deployment output');
+assert.match(siteBuilder, /deployment-info\.json/, 'published site must carry revision metadata for release verification');
+assert.match(siteBuilder, /assets\/favicon\.svg/, 'site builder must copy only the explicitly public favicon asset');
+assert.match(distVerifier, /deployment-info\.json/, 'built output verifier must validate revision metadata');
+assert.match(postDeploySmoke, /EXPECTED_SHA/, 'live smoke test must compare deployed revision');
+assert.match(postDeploySmoke, /deployment-info\.json/, 'live smoke test must verify deployment revision metadata');
+assert.match(packageJson.scripts.verify, /node scripts\/post-deploy-smoke\.test\.mjs/, 'live smoke behavior tests must be included in verification');
+
+console.log('Static checks passed: ' + ids.length + ' unique IDs, ' + links.length + ' local asset references; screenshot and release-safety contracts present.');
